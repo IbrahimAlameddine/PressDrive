@@ -1,0 +1,5 @@
+import Icon from "./Icon";
+
+export default function VehicleCard({ image, type, name, detail, price }: { image: string; type: string; name: string; detail: string; price: string }) {
+  return <article className="overflow-hidden rounded-xl border border-[#292d35] bg-[#111318] transition hover:border-[#665714]"><div className="h-36 bg-cover bg-center" style={{ backgroundImage: `url('${image}')` }} role="img" aria-label={name} /><div className="p-4"><span className={`inline-flex rounded-full px-2.5 py-1 text-[9px] ${type === "Private Driver" ? "border border-[#7f6812] bg-[#2a260d] text-[#f4c817]" : "bg-[#282b31] text-[#b8bbc2]"}`}>{type}</span><h3 className="mt-3 text-sm font-bold text-[#f3f3ef]">{name}</h3><p className="mt-1 text-[11px] text-[#858994]">{detail}</p><div className="mt-4 flex items-center justify-between"><p className="text-sm font-bold text-[#ffd015]">{price}<span className="text-[10px] font-normal text-[#858994]">/day</span></p><a href="#book" className="inline-flex items-center gap-1 rounded-md bg-[#ffd015] px-3 py-2 text-[10px] font-bold text-[#151515] hover:bg-[#ffe05b]">Book</a></div></div></article>;
+}

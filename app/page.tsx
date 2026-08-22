@@ -1,69 +1,80 @@
-import Image from "next/image";
+import FeatureCard from "./components/FeatureCard";
+import Icon from "./components/Icon";
+import VehicleCard from "./components/VehicleCard";
+
+const features = [
+  {
+    icon: "building",
+    title: "Rental Offices",
+    description: "Browse fleets from multiple offices. Choose self-drive or request an office driver.",
+  },
+  {
+    icon: "user",
+    title: "Private Drivers",
+    description: "Book a private driver with their own vehicle. All-in-one service for any trip.",
+  },
+  {
+    icon: "brain",
+    title: "AI Recommendation",
+    description: "Answer a few questions and the AI suggests the best vehicle for your needs.",
+  },
+] as const;
+
+const vehicles = [
+  {
+    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=900&q=85",
+    type: "Rental Office",
+    name: "Toyota Corolla '23",
+    detail: "City Motors · Self-drive",
+    price: "$35",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=85",
+    type: "Private Driver",
+    name: "Karim J. — SUV",
+    detail: "Driver included · 5 seats",
+    price: "$90",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=900&q=85",
+    type: "Rental Office",
+    name: "Mercedes E-Class",
+    detail: "Luxury Fleet · Self-drive",
+    price: "$120",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="flex-1">
+      <section className="relative overflow-hidden border-b border-white/5 bg-[radial-gradient(circle_at_68%_38%,rgba(255,204,0,0.07),transparent_28%),linear-gradient(115deg,#090a0d_35%,#12130f_100%)]">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 sm:px-10 lg:grid-cols-[1fr_1fr] lg:gap-16 lg:py-24">
+          <div className="max-w-md">
+            <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.28em] text-[#ffd000]">Car rental platform</p>
+            <h1 className="font-sans text-5xl font-extrabold tracking-[-0.05em] text-[#fffdf4] sm:text-6xl">PressDrive</h1>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-[#a5a8b0]">Connecting customers with rental offices and private drivers — all in one place.</p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a href="/browse" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#ffd015] px-5 text-xs font-bold text-[#111216] transition hover:bg-[#ffe05b]"><Icon name="search" />Browse Vehicles</a>
+              <a href="#features" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#806b10] px-5 text-xs font-medium text-[#f5ce25] transition hover:bg-[#2a250e]"><Icon name="sparkles" />Try AI Assistant</a>
+            </div>
+          </div>
+          <div className="relative mx-auto w-full max-w-[430px] lg:mx-0 lg:justify-self-end">
+            <div className="absolute -inset-5 rounded-[30px] bg-[#c3a314]/10 blur-2xl" />
+            <div className="relative aspect-[1.45] overflow-hidden rounded-2xl bg-[#24251f] shadow-2xl shadow-black/40" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=85')", backgroundPosition: "center", backgroundSize: "cover" }} aria-label="Driver inside a car" role="img" />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section id="features" className="mx-auto grid max-w-7xl gap-5 px-6 py-14 sm:px-10 md:grid-cols-3 md:py-16">
+        {features.map((feature) => <FeatureCard key={feature.title} {...feature} />)}
+      </section>
+
+      <section id="available" className="border-t border-white/5 bg-[#090a0d]">
+        <div className="mx-auto max-w-7xl px-6 py-14 sm:px-10 md:py-16">
+          <div className="mb-6 flex items-center justify-between"><h2 className="text-lg font-bold tracking-tight text-[#f7f7f3]">Available Now</h2><a href="/browse" className="text-xs font-medium text-[#ffd015] hover:text-[#ffe47a]">View all <span aria-hidden="true">→</span></a></div>
+          <div className="grid gap-4 md:grid-cols-3">{vehicles.map((vehicle) => <VehicleCard key={vehicle.name} {...vehicle} />)}</div>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
