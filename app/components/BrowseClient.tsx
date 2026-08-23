@@ -5,25 +5,25 @@ import Link from "next/link";
 import BrowseVehicleCard, { type BrowseVehicle } from "./BrowseVehicleCard";
 
 const vehicles: BrowseVehicle[] = [
-  { image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=900&q=85", provider: "Rental Office", vehicleType: "Sedan", name: "Toyota Corolla '23", detail: "City Motors · Self-drive", service: "Self-Drive", passengers: 5, price: 35 },
-  { image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=85", provider: "Private Driver", vehicleType: "SUV", name: "Karim J. — SUV", detail: "Driver included", service: "With Driver", passengers: 5, price: 90 },
-  { image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=900&q=85", provider: "Rental Office", vehicleType: "Luxury", name: "Mercedes E-Class", detail: "Luxury Fleet · Self-drive", service: "Self-Drive", passengers: 5, price: 120 },
-  { image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=900&q=85", provider: "Private Driver", vehicleType: "Sedan", name: "Hassan M. — Sedan", detail: "Driver included", service: "With Driver", passengers: 4, price: 55 },
-  { image: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=900&q=85", provider: "Rental Office", vehicleType: "Luxury", name: "BMW 5 Series", detail: "City Motors · Both options", service: "Both options", passengers: 5, price: 145 },
-  { image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=900&q=85", provider: "Rental Office", vehicleType: "SUV", name: "Mitsubishi Pajero", detail: "City Motors · Both options", service: "Both options", passengers: 7, price: 80 },
-  { image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=900&q=85", provider: "Rental Office", vehicleType: "Economy", name: "Volkswagen Golf", detail: "Downtown Fleet · Self-drive", service: "Self-Drive", passengers: 5, price: 42 },
-  { image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=900&q=85", provider: "Private Driver", vehicleType: "Van", name: "Maya R. — Van", detail: "Driver included", service: "With Driver", passengers: 7, price: 110 },
-  { image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=85", provider: "Rental Office", vehicleType: "Luxury", name: "Porsche Cayman", detail: "Premium Fleet · Self-drive", service: "Self-Drive", passengers: 2, price: 190 },
+  { image: "/cars/corolla/corolla1.jpg", type: "Rental Office", name: "Toyota Corolla '23", detail: "City Motors · Self-drive · 5 seats", price: "$40" },
+  { image: "/cars/suv/suv1.jpg", type: "Private Driver", name: "Anas Azzam. — SUV", detail: "Driver included · 5 seats", price: "$15" },
+  { image: "/cars/e-class/e-class1.jpg", type: "Rental Office", name: "Mercedes E-Class", detail: "Luxury Fleet · Self-drive · 5 seats", price: "$200" },
+  { image: "/cars/sedan//sedan1.jpg", type: "Private Driver", name: "Ibrahim Alameddine. — Sedan", detail: "Driver included · 4 seats", price: "$10" },
+  { image: "/cars/sunny/sunny1.jpg", type: "Rental Office", name: "Nissan Sunny", detail: "City Motors · Both options · 5 seats", price: "$25" },
+  { image: "/cars/rogue/rogue1.jpg", type: "Rental Office", name: "Nissan Rogue", detail: "City Motors · Both options · 5 seats", price: "$40" },
+  { image: "/cars/pilot/pilot1.jpg", type: "Rental Office", name: "Honda Pilot", detail: "Downtown Fleet · Self-drive · 7 seats", price: "$55" },
+  { image: "/cars/hyundai/hyundai1.jpg", type: "Private Driver", name: "Ahmad Sayed. — Van", detail: "Driver included · 10 seats", price: "$20" },
+  { image: "/cars/bmw/bmw1.jpg", type: "Rental Office", name: "BMW ", detail: "Premium Fleet · Self-drive · 2 seats", price: "$75" },
 ];
 
 export default function BrowseClient({ initialProvider }: { initialProvider: string }) {
   const [provider, setProvider] = useState(initialProvider);
 
-  const visibleVehicles = useMemo(() => vehicles.filter((vehicle) => provider === "all" || (provider === "office" && vehicle.provider === "Rental Office") || (provider === "driver" && vehicle.provider === "Private Driver")), [provider]);
+  const visibleVehicles = useMemo(() => vehicles.filter((vehicle) => provider === "all" || (provider === "office" && vehicle.type === "Rental Office") || (provider === "driver" && vehicle.type === "Private Driver")), [provider]);
 
   return (
     <main className="flex-1 bg-[#090a0d]">
-      <div className="mx-auto max-w-7xl px-6 py-10 sm:px-10 md:py-14">
+      <div className="mx-auto w-full max-w-6xl px-6 py-10 sm:px-10 md:py-14">
         <div className="mb-8"><p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#ffd015]">Find your ride</p><h1 className="mt-2 text-3xl font-extrabold tracking-tight text-[#f7f7f3]">Browse Vehicles</h1><p className="mt-2 text-sm text-[#858994]">Compare rental offices and private drivers in one place.</p></div>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="inline-flex rounded-lg border border-[#292d35] bg-[#1b1e24] p-1 text-xs font-semibold">
@@ -32,7 +32,7 @@ export default function BrowseClient({ initialProvider }: { initialProvider: str
           <span className="text-xs text-[#858994]">Showing {visibleVehicles.length} of {vehicles.length} vehicles</span>
         </div>
         <section aria-label="Available vehicles">
-          {visibleVehicles.length > 0 ? <div className="grid gap-4 md:grid-cols-3">{visibleVehicles.map((vehicle) => <BrowseVehicleCard key={vehicle.name} vehicle={vehicle} />)}</div> : <div className="rounded-xl border border-dashed border-[#30343c] px-6 py-16 text-center"><h2 className="text-sm font-bold text-[#f7f7f3]">No vehicles match this choice</h2><p className="mt-2 text-xs text-[#858994]">Choose another provider to see more vehicles.</p></div>}
+          {visibleVehicles.length > 0 ? <div className="grid gap-6 md:grid-cols-[repeat(3,minmax(0,21rem))] md:justify-center">{visibleVehicles.map((vehicle) => <BrowseVehicleCard key={vehicle.name} {...vehicle} />)}</div> : <div className="rounded-xl border border-dashed border-[#30343c] px-6 py-16 text-center"><h2 className="text-sm font-bold text-[#f7f7f3]">No vehicles match this choice</h2><p className="mt-2 text-xs text-[#858994]">Choose another provider to see more vehicles.</p></div>}
         </section>
       </div>
     </main>

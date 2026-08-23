@@ -22,25 +22,25 @@ const features = [
 
 const vehicles = [
   {
-    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=900&q=85",
+    image: "/cars/corolla/corolla1.jpg",
     type: "Rental Office",
     name: "Toyota Corolla '23",
     detail: "City Motors · Self-drive",
     price: "$35",
   },
   {
-    image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=85",
+    image: "/cars/suv/suv1.jpg",
     type: "Private Driver",
-    name: "Karim J. — SUV",
+    name: "Anas Azzam. — SUV",
     detail: "Driver included · 5 seats",
-    price: "$90",
+    price: "$15",
   },
   {
-    image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=900&q=85",
+    image: "/cars/e-class/e-class1.jpg",
     type: "Rental Office",
     name: "Mercedes E-Class",
     detail: "Luxury Fleet · Self-drive",
-    price: "$120",
+    price: "$200",
   },
 ];
 
@@ -58,9 +58,9 @@ export default function Home() {
               <a href="#features" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-[#806b10] px-5 text-xs font-medium text-[#f5ce25] transition hover:bg-[#2a250e]"><Icon name="sparkles" />Try AI Assistant</a>
             </div>
           </div>
-          <div className="relative mx-auto w-full max-w-[430px] lg:mx-0 lg:justify-self-end">
+          <div className="relative mx-auto w-full max-w-[430px] lg:mx-0 lg:max-w-[520px] lg:justify-self-end">
             <div className="absolute -inset-5 rounded-[30px] bg-[#c3a314]/10 blur-2xl" />
-            <div className="relative aspect-[1.45] overflow-hidden rounded-2xl bg-[#24251f] shadow-2xl shadow-black/40" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=85')", backgroundPosition: "center", backgroundSize: "cover" }} aria-label="Driver inside a car" role="img" />
+            <div className="relative aspect-[1.45] overflow-hidden rounded-2xl bg-[#24251f] shadow-2xl shadow-black/40 lg:h-[320px] lg:aspect-auto" style={{ backgroundImage: "url('home.png')", backgroundPosition: "center", backgroundSize: "cover" }} aria-label="Driver inside a car" role="img" />
           </div>
         </div>
       </section>
