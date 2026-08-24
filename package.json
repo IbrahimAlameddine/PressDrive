@@ -3,9 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+<<<<<<< HEAD
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
+=======
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+>>>>>>> 8800b54234da290b8f4f91ee0b9921a19c4c9907
     "lint": "eslint"
   },
   "dependencies": {
