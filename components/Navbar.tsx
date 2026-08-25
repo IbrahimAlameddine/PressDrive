@@ -19,9 +19,15 @@ export default function Navbar() {
         </Link>
 
         <nav aria-label="Main navigation" className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 text-xs font-semibold text-[#f7f7f3] md:flex">
-          <Link className={`border-b-2 border-transparent pb-1 transition hover:border-[#ffd015] hover:text-[#ffd015] ${homeIsActive ? "text-[#ffd015]" : "text-[#f7f7f3]"}`} href="/">Home</Link>
-          <Link className={`border-b-2 border-transparent pb-1 transition hover:border-[#ffd015] hover:text-[#ffd015] ${browseIsActive ? "text-[#ffd015]" : "text-[#f7f7f3]"}`} href="/browse">Browse Vehicles</Link>
-          <a className="border-b-2 border-transparent pb-1 transition hover:border-[#ffd015] hover:text-[#ffd015]" href="#features">AI Assistant</a>
+          <Link className={`border-b-2 border-transparent pb-1 transition hover:border-[#ffd015] hover:text-[#ffd015] ${homeIsActive ? "text-[#ffd015]" : "text-[#f7f7f3]"}`} href="/">
+            Home
+          </Link>
+          <Link className={`border-b-2 border-transparent pb-1 transition hover:border-[#ffd015] hover:text-[#ffd015] ${browseIsActive ? "text-[#ffd015]" : "text-[#f7f7f3]"}`} href="/browse">
+            Browse Vehicles
+          </Link>
+          <Link className={`border-b-2 border-transparent pb-1 transition hover:border-[#ffd015] hover:text-[#ffd015] ${pathname === "/ai-assistant" ? "text-[#ffd015]" : "text-[#f7f7f3]"}`} href="/ai-assistant">
+            AI Assistant
+          </Link>
         </nav>
 
 

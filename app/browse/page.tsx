@@ -1,4 +1,4 @@
-import BrowseClient from "../components/BrowseClient";
+import BrowseClient from "../../components/BrowseClient";
 
 export default async function BrowsePage({ searchParams }: { searchParams: Promise<{ provider?: string }> }) {
   const { provider } = await searchParams;
