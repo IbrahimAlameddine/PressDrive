@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  phone     String   @unique
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cars     Car[]
+  bookings Booking[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  PROVIDER
+}
+
+model Car {
+  id               Int      @id @default(autoincrement())
+  brand            String
+  model            String
+  year             Int
+  seats            Int
+  transmission     Transmission
+  pricePerHour     Decimal  @db.Decimal(10, 2)
+  profitPerHour    Decimal? @db.Decimal(10, 2)
+  category         String
+  fuelType         Fuel
+  ownerId          Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  owner            User             @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  images           CarImage[]
+  unavailableDates UnavailableDate[]
+  bookings         Booking[]
+
+  @@index([ownerId])
+}
+
+model UnavailableDate {
+  id        Int      @id @default(autoincrement())
+  carId     Int
+  startDate DateTime
+  endDate   DateTime
+
+  car       Car      @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId, startDate, endDate])
+}
+
+enum Transmission {
+  AUTO
+  MANUAL
+  CVT
+  DUALCLUTCH
+}
+
+enum Fuel {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+}
+
+model CarImage {
+  id      Int    @id @default(autoincrement())
+  url     String
+  carId   Int
+
+  car     Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+}
+
+model Booking {
+  id        Int           @id @default(autoincrement())
+  carId     Int
+  userId    Int
+  startDate DateTime
+  endDate   DateTime
+  status    BookingStatus @default(PENDING)
+  totalPrice Decimal      @db.Decimal(10, 2)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  car       Car           @relation(fields: [carId], references: [id], onDelete: Restrict)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([carId, startDate, endDate])
+  @@index([userId, status])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
