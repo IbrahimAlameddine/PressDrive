@@ -1,6 +1,7 @@
 import FeatureCard from "../components/FeatureCard";
 import Icon from "../components/Icon";
 import VehicleCard from "../components/VehicleCard";
+import { prisma } from "@/lib/prisma";
 
 const features = [
   {
@@ -20,31 +21,44 @@ const features = [
   },
 ] as const;
 
-const vehicles = [
-  {
-    image: "/cars/corolla/corolla1.jpg",
-    type: "Rental Office",
-    name: "Toyota Corolla '23",
-    detail: "City Motors · Self-drive",
-    price: "$35",
-  },
-  {
-    image: "/cars/suv/suv1.jpg",
-    type: "Private Driver",
-    name: "Anas Azzam. — SUV",
-    detail: "Driver included · 5 seats",
-    price: "$15",
-  },
-  {
-    image: "/cars/e-class/e-class1.jpg",
-    type: "Rental Office",
-    name: "Mercedes E-Class",
-    detail: "Luxury Fleet · Self-drive",
-    price: "$200",
-  },
+const fallbackImages = [
+  "/cars/corolla/corolla1.jpg",
+  "/cars/suv/suv1.jpg",
+  "/cars/e-class/e-class1.jpg",
+  "/cars/sedan/sedan1.jpg",
+  "/cars/sunny/sunny1.jpg",
+  "/cars/rogue/rogue1.jpg",
+  "/cars/pilot/pilot1.jpg",
+  "/cars/hyundai/hyundai1.jpg",
+  "/cars/bmw/bmw1.jpg",
 ];
 
-export default function Home() {
+export default async function Home() {
+  const cars = await prisma.car.findMany({
+    where: { owner: { role: "PROVIDER" } },
+    include: {
+      owner: { select: { username: true } },
+      images: { orderBy: { id: "asc" }, take: 1, select: { url: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 3,
+  });
+
+  const vehicles = cars.map((car) => {
+    const normalizedCategory = (car.category || "Sedan").toLowerCase();
+    const type = normalizedCategory.includes("driver") || normalizedCategory.includes("private") ? "Private Driver" : "Rental Office";
+
+    return {
+      id: car.id,
+      image: car.images[0]?.url ?? fallbackImages[car.id % fallbackImages.length],
+      type,
+      name: `${car.brand} ${car.model}`,
+      detail: `${car.owner.username} · ${car.seats} seats · ${car.transmission}`,
+      price: `$${Number(car.pricePerDay).toFixed(2)}`,
+      provider: car.owner.username,
+    };
+  });
+
   return (
     <main className="flex-1">
       <section className="relative overflow-hidden border-b border-white/5 bg-[radial-gradient(circle_at_68%_38%,rgba(255,204,0,0.07),transparent_28%),linear-gradient(115deg,#090a0d_35%,#12130f_100%)]">
@@ -80,9 +94,13 @@ export default function Home() {
             </a>
           </header>
           <div className="grid gap-4 md:grid-cols-3">
-            {vehicles.map((vehicle) => (
-              <VehicleCard key={vehicle.name} {...vehicle} />
-            ))}
+            {vehicles.length > 0 ? vehicles.map((vehicle) => (
+              <VehicleCard key={vehicle.id ?? vehicle.name} {...vehicle} />
+            )) : (
+              <div className="md:col-span-3 rounded-xl border border-dashed border-[#30343c] px-6 py-12 text-center text-sm text-[#858994]">
+                No vehicles are available yet. Add a provider car in the dashboard to populate the site.
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -1,17 +1,7 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
-
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set");
-}
-
-const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString }),
-});
+import { clearSessionCookie, setSessionCookie } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 function hashPassword(password: string) {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -77,7 +67,14 @@ export async function POST(request: Request) {
         },
       });
 
-      return NextResponse.json({ message: "User created successfully.", user }, { status: 201 });
+return NextResponse.json(
+  {
+    status: 201,
+    message: "User created successfully.",
+    data: user,
+  },
+  { status: 201 }
+);
     }
 
     if (action === "login") {
@@ -96,16 +93,26 @@ export async function POST(request: Request) {
         return NextResponse.json({ message: "Invalid credentials." }, { status: 401 });
       }
 
-      return NextResponse.json({
-        message: "Login successful.",
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          phone: user.phone,
-          role: user.role,
-        },
-      });
+      const sessionUser = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      };
+
+      await setSessionCookie(sessionUser);
+
+return NextResponse.json({
+  status: 200,
+  message: "Login successful.",
+  data: sessionUser,
+});
+    }
+
+    if (action === "logout") {
+      await clearSessionCookie();
+      return NextResponse.json({ message: "Logout successful." });
     }
 
     return NextResponse.json({ message: "Invalid action." }, { status: 400 });

@@ -1,0 +1,1 @@
+export { DELETE } from "../../invalid-dates/[dateId]/route";

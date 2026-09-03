@@ -33,8 +33,8 @@ model Car {
   year             Int
   seats            Int
   transmission     Transmission
-  pricePerHour     Decimal  @db.Decimal(10, 2)
-  profitPerHour    Decimal? @db.Decimal(10, 2)
+  pricePerDay     Decimal  @db.Decimal(10, 2)
+  profitPerDay    Decimal @db.Decimal(10, 2)
   category         String
   fuelType         Fuel
   ownerId          Int
