@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fuelTypes, getNumber, getText, transmissions } from "./helpers";
 
-const ownerSelect = { id: true, username: true, email: true, phone: true, role: true };
+const ownerSelect = {
+  id: true,
+  username: true,
+  email: true,
+  phone: true,
+  role: true,
+};
 
 export async function GET() {
   try {
@@ -32,25 +38,43 @@ export async function POST(request: Request) {
     const fuelType = getText(body?.fuelType);
 
     if (
-      !brand || !model || !category || year === undefined || seats === undefined ||
-      ownerId === undefined || pricePerDay === undefined || profitPerDay === undefined ||
+      !brand ||
+      !model ||
+      !category ||
+      year === undefined ||
+      seats === undefined ||
+      ownerId === undefined ||
+      pricePerDay === undefined ||
+      profitPerDay === undefined ||
       !transmissions.includes(transmission as (typeof transmissions)[number]) ||
       !fuelTypes.includes(fuelType as (typeof fuelTypes)[number])
     ) {
       return NextResponse.json(
-        { status: 400, message: "All car fields are required and must be valid." },
-        { status: 400 }
+        {
+          status: 400,
+          message: "All car fields are required and must be valid.",
+        },
+        { status: 400 },
       );
     }
 
     const owner = await prisma.user.findUnique({ where: { id: ownerId } });
-    if (!owner) return NextResponse.json({ status: 404, message: "Owner not found." }, { status: 404 });
+    if (!owner)
+      return NextResponse.json(
+        { status: 404, message: "Owner not found." },
+        { status: 404 },
+      );
 
     const car = await prisma.car.create({
       data: {
-        brand, model, year, seats,
+        brand,
+        model,
+        year,
+        seats,
         transmission: transmission as (typeof transmissions)[number],
-        pricePerDay, profitPerDay, category,
+        pricePerDay,
+        profitPerDay,
+        category,
         fuelType: fuelType as (typeof fuelTypes)[number],
         owner: { connect: { id: ownerId } },
       },

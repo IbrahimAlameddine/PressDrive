@@ -17,21 +17,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const isAdmin = sessionUser.role === "ADMIN";
-  const isProvider = sessionUser.role === "PROVIDER";
-
-  if (pathname === "/dashboard/users" || pathname === "/dashboard/providers") {
-    if (!isAdmin) {
-      const dashboardUrl = new URL("/dashboard", request.url);
-      return NextResponse.redirect(dashboardUrl);
-    }
-  }
-
-  if (pathname === "/dashboard" || pathname === "/dashboard/cars") {
-    if (!isAdmin && !isProvider) {
-      const loginUrl = new URL("/login", request.url);
-      return NextResponse.redirect(loginUrl);
-    }
+  if (sessionUser.role !== "ADMIN") {
+    const homeUrl = new URL("/", request.url);
+    return NextResponse.redirect(homeUrl);
   }
 
   return NextResponse.next();

@@ -138,7 +138,7 @@ export async function DELETE(
     const { id } = await params;
     const userId = Number(id);
 
-    if (!userId) {
+    if (!Number.isInteger(userId) || userId <= 0) {
       return NextResponse.json(
         { status: 400, message: "Invalid user ID." },
         { status: 400 }
@@ -160,16 +160,22 @@ export async function DELETE(
       where: { id: userId },
     });
 
-    return NextResponse.json({
-      status: 200,
-      message: "User deleted successfully.",
-    });
+    return NextResponse.json(
+      {
+        status: 200,
+        message: "User deleted successfully.",
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Failed to delete user:", error);
 
-    return NextResponse.json({
-      status: 500,
-      message: "Failed to delete user.",
-    });
+    return NextResponse.json(
+      {
+        status: 500,
+        message: "Failed to delete user.",
+      },
+      { status: 500 }
+    );
   }
 }

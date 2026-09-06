@@ -30,11 +30,7 @@ export default function VehicleCard({
 
       <div className="flex flex-1 flex-col p-4">
         <span
-          className={`inline-flex w-fit rounded-full px-2.5 py-1 text-[9px] ${
-            type === "Private Driver"
-              ? "border border-[#7f6812] bg-[#2a260d] text-[#f4c817]"
-              : "bg-[#282b31] text-[#b8bbc2]"
-          }`}
+          className="inline-flex w-fit rounded-full bg-[#282b31] px-2.5 py-1 text-[9px] text-[#b8bbc2]"
         >
           {type}
         </span>

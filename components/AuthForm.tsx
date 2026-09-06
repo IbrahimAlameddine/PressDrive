@@ -31,9 +31,7 @@ const loginSchema = z.object({
     .trim()
     .min(1, "Email is required.")
     .email("Please enter a valid email address."),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters long."),
+  password: z.string().min(6, "Password must be at least 6 characters long."),
 });
 
 const signUpSchema = z
@@ -45,12 +43,8 @@ const signUpSchema = z
       .min(1, "Email is required.")
       .email("Please enter a valid email address."),
     phone: z.string().trim().min(1, "Phone number is required."),
-    password: z
-      .string()
-      .min(6, "Password must be at least 6 characters long."),
-    confirmPassword: z
-      .string()
-      .min(1, "Please confirm your password."),
+    password: z.string().min(6, "Password must be at least 6 characters long."),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
@@ -78,7 +72,9 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     const formData = new FormData(event.currentTarget);
     const values = {
       username: String(formData.get("username") || "").trim(),
-      email: String(formData.get("email") || "").trim().toLowerCase(),
+      email: String(formData.get("email") || "")
+        .trim()
+        .toLowerCase(),
       phone: String(formData.get("phone") || "").trim(),
       password: String(formData.get("password") || ""),
       confirmPassword: String(formData.get("passwordConfirmation") || ""),
@@ -264,16 +260,10 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
             </div>
           )}
 
-          {error && (
-            <p className="text-sm font-medium text-red-400">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-sm font-medium text-red-400">{error}</p>}
 
           {success && (
-            <p className="text-sm font-medium text-green-400">
-              {success}
-            </p>
+            <p className="text-sm font-medium text-green-400">{success}</p>
           )}
 
           <button
@@ -292,10 +282,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         </form>
 
         <p className="mt-7 text-center text-sm text-[#85878d]">
-          {isLogin
-            ? "Need an account?"
-            : "Already have an account?"}{" "}
-
+          {isLogin ? "Need an account?" : "Already have an account?"}{" "}
           <Link
             href={isLogin ? "/sign-up" : "/login"}
             className="font-semibold text-[#ffd015] hover:text-[#ffe066]"

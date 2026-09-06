@@ -63,10 +63,7 @@ export default function UsersPage() {
     setMessage("");
   };
 
-  const handleChange = (
-    field: keyof UserFormState,
-    value: string
-  ) => {
+  const handleChange = (field: keyof UserFormState, value: string) => {
     setForm((current) => ({
       ...current,
       [field]: field === "role" ? (value as UserFormState["role"]) : value,
@@ -114,14 +111,14 @@ export default function UsersPage() {
       }
     } catch {
       setMessage(
-        editingUser ? "Failed to update user." : "Failed to create user."
+        editingUser ? "Failed to update user." : "Failed to create user.",
       );
     }
   };
 
   const handleDelete = async (user: User) => {
     const confirmed = window.confirm(
-      `Are you sure you want to delete ${user.username}?`
+      `Are you sure you want to delete ${user.username}?`,
     );
 
     if (!confirmed) {
@@ -253,7 +250,9 @@ export default function UsersPage() {
                 </label>
                 <input
                   value={form.username}
-                  onChange={(event) => handleChange("username", event.target.value)}
+                  onChange={(event) =>
+                    handleChange("username", event.target.value)
+                  }
                   className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-[#252628] px-3 text-sm text-[#f7f7f3] outline-none focus:border-[#ffd015]"
                   required
                 />
@@ -266,7 +265,9 @@ export default function UsersPage() {
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(event) => handleChange("email", event.target.value)}
+                  onChange={(event) =>
+                    handleChange("email", event.target.value)
+                  }
                   className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-[#252628] px-3 text-sm text-[#f7f7f3] outline-none focus:border-[#ffd015]"
                   required
                 />
@@ -278,7 +279,9 @@ export default function UsersPage() {
                 </label>
                 <input
                   value={form.phone}
-                  onChange={(event) => handleChange("phone", event.target.value)}
+                  onChange={(event) =>
+                    handleChange("phone", event.target.value)
+                  }
                   className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-[#252628] px-3 text-sm text-[#f7f7f3] outline-none focus:border-[#ffd015]"
                   required
                 />
@@ -291,7 +294,9 @@ export default function UsersPage() {
                 <input
                   type="password"
                   value={form.password}
-                  onChange={(event) => handleChange("password", event.target.value)}
+                  onChange={(event) =>
+                    handleChange("password", event.target.value)
+                  }
                   className="mt-2 h-11 w-full rounded-lg border border-white/10 bg-[#252628] px-3 text-sm text-[#f7f7f3] outline-none focus:border-[#ffd015]"
                   required={!editingUser}
                 />
@@ -312,9 +317,7 @@ export default function UsersPage() {
                 </select>
               </div>
 
-              {message && (
-                <p className="text-sm text-[#ffd015]">{message}</p>
-              )}
+              {message && <p className="text-sm text-[#ffd015]">{message}</p>}
 
               <div className="flex justify-end gap-3 pt-2">
                 <button

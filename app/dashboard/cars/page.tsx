@@ -3,54 +3,610 @@
 import { useState } from "react";
 import { useUsers } from "@/lib/users";
 import {
-  fuelTypeOptions, transmissionOptions, useAddCarImage, useAddUnavailableDate,
-  useCarImages, useCars, useCreateCar, useDeleteCar, useDeleteCarImage,
-  useDeleteUnavailableDate, useUnavailableDates, useUpdateCar, type Car, type CarInput,
+  fuelTypeOptions,
+  transmissionOptions,
+  useAddCarImage,
+  useAddUnavailableDate,
+  useCarImages,
+  useCars,
+  useCreateCar,
+  useDeleteCar,
+  useDeleteCarImage,
+  useDeleteUnavailableDate,
+  useUnavailableDates,
+  useUpdateCar,
+  type Car,
+  type CarInput,
 } from "@/lib/cars";
 
 type FormState = {
-  brand: string; model: string; year: string; seats: string;
-  transmission: CarInput["transmission"]; pricePerDay: string; profitPerDay: string;
-  category: string; fuelType: CarInput["fuelType"]; ownerId: string;
+  brand: string;
+  model: string;
+  year: string;
+  seats: string;
+  transmission: CarInput["transmission"];
+  pricePerDay: string;
+  profitPerDay: string;
+  category: string;
+  fuelType: CarInput["fuelType"];
+  ownerId: string;
 };
 
-const emptyForm = (): FormState => ({ brand: "", model: "", year: "", seats: "", transmission: "AUTO", pricePerDay: "", profitPerDay: "", category: "", fuelType: "PETROL", ownerId: "" });
-const inputClass = "mt-2 h-10 w-full rounded-lg border border-white/10 bg-[#252628] px-3 text-sm text-[#f7f7f3] outline-none focus:border-[#ffd015]";
-const actionClass = "rounded-md border border-white/10 px-2.5 py-1.5 text-xs font-semibold text-[#f7f7f3] transition hover:border-[#ffd015] hover:text-[#ffd015]";
+const emptyForm = (): FormState => ({
+  brand: "",
+  model: "",
+  year: "",
+  seats: "",
+  transmission: "AUTO",
+  pricePerDay: "",
+  profitPerDay: "",
+  category: "",
+  fuelType: "PETROL",
+  ownerId: "",
+});
+const inputClass =
+  "mt-2 h-10 w-full rounded-lg border border-white/10 bg-[#252628] px-3 text-sm text-[#f7f7f3] outline-none focus:border-[#ffd015]";
+const actionClass =
+  "rounded-md border border-white/10 px-2.5 py-1.5 text-xs font-semibold text-[#f7f7f3] transition hover:border-[#ffd015] hover:text-[#ffd015]";
 
-function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
-  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"><div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#191a1b] p-6 shadow-2xl"><div className="mb-5 flex items-center justify-between gap-4"><h2 className="text-xl font-bold text-[#f7f7f3]">{title}</h2><button type="button" onClick={onClose} className="text-sm text-[#a9adb6] hover:text-[#ffd015]">Close</button></div>{children}</div></div>;
+function Modal({
+  title,
+  children,
+  onClose,
+}: {
+  title: string;
+  children: React.ReactNode;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#191a1b] p-6 shadow-2xl">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <h2 className="text-xl font-bold text-[#f7f7f3]">{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-sm text-[#a9adb6] hover:text-[#ffd015]"
+          >
+            Close
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
 }
 
 export default function CarsPage() {
   const { data: cars = [], isLoading, error } = useCars();
   const { data: users = [] } = useUsers();
-  const createCar = useCreateCar(); const updateCar = useUpdateCar(); const deleteCar = useDeleteCar();
-  const addImage = useAddCarImage(); const deleteImage = useDeleteCarImage();
-  const addDate = useAddUnavailableDate(); const deleteDate = useDeleteUnavailableDate();
+  const createCar = useCreateCar();
+  const updateCar = useUpdateCar();
+  const deleteCar = useDeleteCar();
+  const addImage = useAddCarImage();
+  const deleteImage = useDeleteCarImage();
+  const addDate = useAddUnavailableDate();
+  const deleteDate = useDeleteUnavailableDate();
   const [editingCar, setEditingCar] = useState<Car | null>(null);
   const [isCarFormOpen, setIsCarFormOpen] = useState(false);
   const [form, setForm] = useState<FormState>(emptyForm());
   const [resource, setResource] = useState<"images" | "dates" | null>(null);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
-  const [imageUrl, setImageUrl] = useState(""); const [startDate, setStartDate] = useState(""); const [endDate, setEndDate] = useState(""); const [message, setMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [message, setMessage] = useState("");
   const imagesQuery = useCarImages(selectedCar?.id || 0, resource === "images");
-  const datesQuery = useUnavailableDates(selectedCar?.id || 0, resource === "dates");
-  const close = () => { setEditingCar(null); setIsCarFormOpen(false); setResource(null); setSelectedCar(null); setImageUrl(""); setStartDate(""); setEndDate(""); };
-  const openEdit = (car: Car) => { setEditingCar(car); setIsCarFormOpen(true); setForm({ brand: car.brand, model: car.model, year: String(car.year), seats: String(car.seats), transmission: car.transmission, pricePerDay: String(car.pricePerDay), profitPerDay: String(car.profitPerDay), category: car.category, fuelType: car.fuelType, ownerId: String(car.ownerId) }); };
-  const setField = (field: keyof FormState, value: string) => setForm((current) => ({ ...current, [field]: value }));
-  const submitCar = async (event: React.FormEvent<HTMLFormElement>) => { event.preventDefault(); const data: CarInput = { brand: form.brand, model: form.model, year: Number(form.year), seats: Number(form.seats), transmission: form.transmission, pricePerDay: Number(form.pricePerDay), profitPerDay: Number(form.profitPerDay), category: form.category, fuelType: form.fuelType, ownerId: Number(form.ownerId) }; try { if (editingCar) await updateCar.mutateAsync({ id: editingCar.id, data }); else await createCar.mutateAsync(data); close(); setMessage(editingCar ? "Car updated successfully." : "Car created successfully."); } catch (requestError) { setMessage(requestError instanceof Error ? requestError.message : "Unable to save car."); } };
-  const removeCar = async (car: Car) => { if (!window.confirm(`Are you sure you want to delete ${car.brand} ${car.model}?`)) return; try { await deleteCar.mutateAsync(car.id); setMessage("Car deleted successfully."); } catch (requestError) { setMessage(requestError instanceof Error ? requestError.message : "Unable to delete car."); } };
-  const openResource = (car: Car, nextResource: "images" | "dates") => { setSelectedCar(car); setResource(nextResource); setMessage(""); };
-  const submitImage = async (event: React.FormEvent<HTMLFormElement>) => { event.preventDefault(); if (!selectedCar) return; try { await addImage.mutateAsync({ carId: selectedCar.id, url: imageUrl }); setImageUrl(""); setMessage("Image added successfully."); } catch (requestError) { setMessage(requestError instanceof Error ? requestError.message : "Unable to add image."); } };
-  const submitDate = async (event: React.FormEvent<HTMLFormElement>) => { event.preventDefault(); if (!selectedCar) return; try { await addDate.mutateAsync({ carId: selectedCar.id, date: startDate, endDate: endDate || undefined }); setStartDate(""); setEndDate(""); setMessage("Unavailable period added successfully."); } catch (requestError) { setMessage(requestError instanceof Error ? requestError.message : "Unable to add unavailable period."); } };
+  const datesQuery = useUnavailableDates(
+    selectedCar?.id || 0,
+    resource === "dates",
+  );
+  const close = () => {
+    setEditingCar(null);
+    setIsCarFormOpen(false);
+    setResource(null);
+    setSelectedCar(null);
+    setImageUrl("");
+    setStartDate("");
+    setEndDate("");
+  };
+  const openEdit = (car: Car) => {
+    setEditingCar(car);
+    setIsCarFormOpen(true);
+    setForm({
+      brand: car.brand,
+      model: car.model,
+      year: String(car.year),
+      seats: String(car.seats),
+      transmission: car.transmission,
+      pricePerDay: String(car.pricePerDay),
+      profitPerDay: String(car.profitPerDay),
+      category: car.category,
+      fuelType: car.fuelType,
+      ownerId: String(car.ownerId),
+    });
+  };
+  const setField = (field: keyof FormState, value: string) =>
+    setForm((current) => ({ ...current, [field]: value }));
+  const submitCar = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data: CarInput = {
+      brand: form.brand,
+      model: form.model,
+      year: Number(form.year),
+      seats: Number(form.seats),
+      transmission: form.transmission,
+      pricePerDay: Number(form.pricePerDay),
+      profitPerDay: Number(form.profitPerDay),
+      category: form.category,
+      fuelType: form.fuelType,
+      ownerId: Number(form.ownerId),
+    };
+    try {
+      if (editingCar) await updateCar.mutateAsync({ id: editingCar.id, data });
+      else await createCar.mutateAsync(data);
+      close();
+      setMessage(
+        editingCar ? "Car updated successfully." : "Car created successfully.",
+      );
+    } catch (requestError) {
+      setMessage(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to save car.",
+      );
+    }
+  };
+  const removeCar = async (car: Car) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete ${car.brand} ${car.model}?`,
+      )
+    )
+      return;
+    try {
+      await deleteCar.mutateAsync(car.id);
+      setMessage("Car deleted successfully.");
+    } catch (requestError) {
+      setMessage(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to delete car.",
+      );
+    }
+  };
+  const openResource = (car: Car, nextResource: "images" | "dates") => {
+    setSelectedCar(car);
+    setResource(nextResource);
+    setMessage("");
+  };
+  const submitImage = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedCar) return;
+    try {
+      await addImage.mutateAsync({ carId: selectedCar.id, url: imageUrl });
+      setImageUrl("");
+      setMessage("Image added successfully.");
+    } catch (requestError) {
+      setMessage(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to add image.",
+      );
+    }
+  };
+  const submitDate = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedCar) return;
+    try {
+      await addDate.mutateAsync({
+        carId: selectedCar.id,
+        date: startDate,
+        endDate: endDate || undefined,
+      });
+      setStartDate("");
+      setEndDate("");
+      setMessage("Unavailable period added successfully.");
+    } catch (requestError) {
+      setMessage(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to add unavailable period.",
+      );
+    }
+  };
 
-  return <div>
-    <div className="mb-6 flex items-center justify-between gap-3"><div><p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ffd015]">Management</p><h1 className="mt-3 text-3xl font-extrabold tracking-tight text-[#f7f7f3]">Cars</h1></div><button type="button" onClick={() => { setEditingCar(null); setForm(emptyForm()); setIsCarFormOpen(true); }} className="rounded-lg bg-[#ffd015] px-4 py-2.5 text-sm font-bold text-[#141414] hover:bg-[#ffe066]">+ Create Car</button></div>
-    {message && <div className="mb-4 rounded-lg border border-[#ffd015]/30 bg-[#ffd015]/10 px-3 py-2 text-sm text-[#ffd015]">{message}</div>}
-    {isLoading ? <div className="rounded-2xl border border-white/10 bg-[#121416] p-6 text-sm text-[#a9adb6]">Loading cars...</div> : error ? <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-sm text-red-300">{error instanceof Error ? error.message : "Failed to load cars."}</div> : cars.length === 0 ? <div className="rounded-2xl border border-dashed border-white/10 bg-[#121416] p-10 text-center text-sm text-[#a9adb6]">No cars found</div> : <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121416]"><div className="overflow-x-auto"><table className="min-w-full border-collapse text-left text-sm text-[#dfe1e6]"><thead className="bg-[#191a1b] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#b9bcc3]"><tr><th className="px-4 py-3">Car</th><th className="px-4 py-3">Details</th><th className="px-4 py-3">Pricing</th><th className="px-4 py-3">Owner</th><th className="px-4 py-3">Management</th><th className="px-4 py-3">Actions</th></tr></thead><tbody>{cars.map((car) => <tr key={car.id} className="border-t border-white/5"><td className="px-4 py-3"><div className="font-semibold text-[#f7f7f3]">{car.brand} {car.model}</div><div className="text-xs text-[#a9adb6]">#{car.id} · {car.category}</div></td><td className="px-4 py-3 text-[#a9adb6]">{car.year} · {car.seats} seats<br />{car.transmission} · {car.fuelType}</td><td className="px-4 py-3">${Number(car.pricePerDay).toFixed(2)}<div className="text-xs text-[#a9adb6]">Profit ${Number(car.profitPerDay).toFixed(2)}</div></td><td className="px-4 py-3 text-[#a9adb6]">{car.owner?.username || `User #${car.ownerId}`}</td><td className="px-4 py-3"><div className="flex flex-wrap gap-2"><button type="button" onClick={() => openResource(car, "images")} className={actionClass}>Images</button><button type="button" onClick={() => openResource(car, "dates")} className={actionClass}>Unavailable Days</button></div></td><td className="px-4 py-3"><div className="flex gap-2"><button type="button" onClick={() => openEdit(car)} className={actionClass}>Edit</button><button type="button" onClick={() => removeCar(car)} className="rounded-md border border-red-500/30 bg-red-500/10 px-2.5 py-1.5 text-xs font-semibold text-red-300">Delete</button></div></td></tr>)}</tbody></table></div></div>}
-    {isCarFormOpen && <Modal title={editingCar ? "Edit Car" : "Create Car"} onClose={close}><form onSubmit={submitCar} className="grid gap-4 sm:grid-cols-2">{(["brand", "model", "category"] as const).map((field) => <label key={field} className="text-xs font-semibold capitalize text-[#c6c7ca]">{field}<input value={form[field]} onChange={(event) => setField(field, event.target.value)} className={inputClass} required /></label>)}<label className="text-xs font-semibold text-[#c6c7ca]">Year<input type="number" value={form.year} onChange={(event) => setField("year", event.target.value)} className={inputClass} required /></label><label className="text-xs font-semibold text-[#c6c7ca]">Seats<input type="number" value={form.seats} onChange={(event) => setField("seats", event.target.value)} className={inputClass} required /></label><label className="text-xs font-semibold text-[#c6c7ca]">Price per day<input type="number" step="0.01" value={form.pricePerDay} onChange={(event) => setField("pricePerDay", event.target.value)} className={inputClass} required /></label><label className="text-xs font-semibold text-[#c6c7ca]">Profit per day<input type="number" step="0.01" value={form.profitPerDay} onChange={(event) => setField("profitPerDay", event.target.value)} className={inputClass} required /></label><label className="text-xs font-semibold text-[#c6c7ca]">Transmission<select value={form.transmission} onChange={(event) => setField("transmission", event.target.value as CarInput["transmission"])} className={inputClass}>{transmissionOptions.map((value) => <option key={value}>{value}</option>)}</select></label><label className="text-xs font-semibold text-[#c6c7ca]">Fuel type<select value={form.fuelType} onChange={(event) => setField("fuelType", event.target.value as CarInput["fuelType"])} className={inputClass}>{fuelTypeOptions.map((value) => <option key={value}>{value}</option>)}</select></label><label className="text-xs font-semibold text-[#c6c7ca] sm:col-span-2">Owner<select value={form.ownerId} onChange={(event) => setField("ownerId", event.target.value)} className={inputClass} required>{users.map((user) => <option key={user.id} value={user.id}>{user.username} ({user.email})</option>)}</select></label><div className="flex justify-end gap-3 pt-2 sm:col-span-2"><button type="button" onClick={close} className={actionClass}>Cancel</button><button type="submit" disabled={createCar.isPending || updateCar.isPending} className="rounded-lg bg-[#ffd015] px-4 py-2 text-sm font-bold text-[#141414] disabled:opacity-60">{createCar.isPending || updateCar.isPending ? "Saving..." : "Save Car"}</button></div></form></Modal>}
-    {resource === "images" && selectedCar && <Modal title={`Images · ${selectedCar.brand} ${selectedCar.model}`} onClose={close}><p className="mb-4 text-sm text-[#a9adb6]">{imagesQuery.data?.length || 0} / 5 images</p>{imagesQuery.isLoading ? <p className="text-sm text-[#a9adb6]">Loading images...</p> : imagesQuery.data?.length ? <div className="mb-5 grid gap-3 sm:grid-cols-2">{imagesQuery.data.map((image) => <div key={image.id} className="overflow-hidden rounded-lg border border-white/10 bg-[#252628]"><img src={image.url} alt="Car" className="h-36 w-full object-cover" /><div className="flex items-center justify-between gap-2 p-2"><span className="truncate text-xs text-[#a9adb6]">{image.url}</span><button type="button" onClick={() => deleteImage.mutate({ carId: selectedCar.id, imageId: image.id })} className="text-xs text-red-300">Delete</button></div></div>)}</div> : <p className="mb-5 text-sm text-[#a9adb6]">No images added.</p>}<form onSubmit={submitImage} className="flex gap-2"><input type="text" value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} placeholder="/cars/corolla/corolla1.jpg" className={inputClass + " mt-0"} required /><button type="submit" disabled={addImage.isPending || (imagesQuery.data?.length || 0) >= 5} className="rounded-lg bg-[#ffd015] px-4 text-sm font-bold text-[#141414] disabled:opacity-60">Add</button></form></Modal>}
-    {resource === "dates" && selectedCar && <Modal title={`Unavailable Days · ${selectedCar.brand} ${selectedCar.model}`} onClose={close}>{datesQuery.isLoading ? <p className="text-sm text-[#a9adb6]">Loading unavailable periods...</p> : datesQuery.data?.length ? <div className="mb-5 space-y-2">{datesQuery.data.map((date) => <div key={date.id} className="flex items-center justify-between rounded-lg border border-white/10 bg-[#252628] px-3 py-2 text-sm"><span>{new Date(date.startDate).toLocaleDateString()} → {new Date(date.endDate).toLocaleDateString()}</span><button type="button" onClick={() => deleteDate.mutate({ carId: selectedCar.id, dateId: date.id })} className="text-xs text-red-300">Delete</button></div>)}</div> : <p className="mb-5 text-sm text-[#a9adb6]">No unavailable periods added.</p>}<form onSubmit={submitDate} className="grid gap-3 sm:grid-cols-2"><label className="text-xs font-semibold text-[#c6c7ca]">Start date<input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} className={inputClass} required /></label><label className="text-xs font-semibold text-[#c6c7ca]">End date (optional)<input type="date" value={endDate} min={startDate} onChange={(event) => setEndDate(event.target.value)} className={inputClass} /></label><button type="submit" disabled={addDate.isPending} className="rounded-lg bg-[#ffd015] px-4 py-2 text-sm font-bold text-[#141414] sm:col-span-2">{addDate.isPending ? "Adding..." : "Add Period"}</button></form></Modal>}
-  </div>;
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ffd015]">
+            Management
+          </p>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-[#f7f7f3]">
+            Cars
+          </h1>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setEditingCar(null);
+            setForm(emptyForm());
+            setIsCarFormOpen(true);
+          }}
+          className="rounded-lg bg-[#ffd015] px-4 py-2.5 text-sm font-bold text-[#141414] hover:bg-[#ffe066]"
+        >
+          + Create Car
+        </button>
+      </div>
+      {message && (
+        <div className="mb-4 rounded-lg border border-[#ffd015]/30 bg-[#ffd015]/10 px-3 py-2 text-sm text-[#ffd015]">
+          {message}
+        </div>
+      )}
+      {isLoading ? (
+        <div className="rounded-2xl border border-white/10 bg-[#121416] p-6 text-sm text-[#a9adb6]">
+          Loading cars...
+        </div>
+      ) : error ? (
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-sm text-red-300">
+          {error instanceof Error ? error.message : "Failed to load cars."}
+        </div>
+      ) : cars.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-white/10 bg-[#121416] p-10 text-center text-sm text-[#a9adb6]">
+          No cars found
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#121416]">
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse text-left text-sm text-[#dfe1e6]">
+              <thead className="bg-[#191a1b] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#b9bcc3]">
+                <tr>
+                  <th className="px-4 py-3">Car</th>
+                  <th className="px-4 py-3">Details</th>
+                  <th className="px-4 py-3">Pricing</th>
+                  <th className="px-4 py-3">Owner</th>
+                  <th className="px-4 py-3">Management</th>
+                  <th className="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cars.map((car) => (
+                  <tr key={car.id} className="border-t border-white/5">
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-[#f7f7f3]">
+                        {car.brand} {car.model}
+                      </div>
+                      <div className="text-xs text-[#a9adb6]">
+                        #{car.id} · {car.category}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[#a9adb6]">
+                      {car.year} · {car.seats} seats
+                      <br />
+                      {car.transmission} · {car.fuelType}
+                    </td>
+                    <td className="px-4 py-3">
+                      ${Number(car.pricePerDay).toFixed(2)}
+                      <div className="text-xs text-[#a9adb6]">
+                        Profit ${Number(car.profitPerDay).toFixed(2)}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[#a9adb6]">
+                      {car.owner?.username || `User #${car.ownerId}`}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openResource(car, "images")}
+                          className={actionClass}
+                        >
+                          Images
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openResource(car, "dates")}
+                          className={actionClass}
+                        >
+                          Unavailable Days
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openEdit(car)}
+                          className={actionClass}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeCar(car)}
+                          className="rounded-md border border-red-500/30 bg-red-500/10 px-2.5 py-1.5 text-xs font-semibold text-red-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {isCarFormOpen && (
+        <Modal title={editingCar ? "Edit Car" : "Create Car"} onClose={close}>
+          <form onSubmit={submitCar} className="grid gap-4 sm:grid-cols-2">
+            {(["brand", "model", "category"] as const).map((field) => (
+              <label
+                key={field}
+                className="text-xs font-semibold capitalize text-[#c6c7ca]"
+              >
+                {field}
+                <input
+                  value={form[field]}
+                  onChange={(event) => setField(field, event.target.value)}
+                  className={inputClass}
+                  required
+                />
+              </label>
+            ))}
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Year
+              <input
+                type="number"
+                value={form.year}
+                onChange={(event) => setField("year", event.target.value)}
+                className={inputClass}
+                required
+              />
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Seats
+              <input
+                type="number"
+                value={form.seats}
+                onChange={(event) => setField("seats", event.target.value)}
+                className={inputClass}
+                required
+              />
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Price per day
+              <input
+                type="number"
+                step="0.01"
+                value={form.pricePerDay}
+                onChange={(event) =>
+                  setField("pricePerDay", event.target.value)
+                }
+                className={inputClass}
+                required
+              />
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Profit per day
+              <input
+                type="number"
+                step="0.01"
+                value={form.profitPerDay}
+                onChange={(event) =>
+                  setField("profitPerDay", event.target.value)
+                }
+                className={inputClass}
+                required
+              />
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Transmission
+              <select
+                value={form.transmission}
+                onChange={(event) =>
+                  setField(
+                    "transmission",
+                    event.target.value as CarInput["transmission"],
+                  )
+                }
+                className={inputClass}
+              >
+                {transmissionOptions.map((value) => (
+                  <option key={value}>{value}</option>
+                ))}
+              </select>
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Fuel type
+              <select
+                value={form.fuelType}
+                onChange={(event) =>
+                  setField(
+                    "fuelType",
+                    event.target.value as CarInput["fuelType"],
+                  )
+                }
+                className={inputClass}
+              >
+                {fuelTypeOptions.map((value) => (
+                  <option key={value}>{value}</option>
+                ))}
+              </select>
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca] sm:col-span-2">
+              Owner
+              <select
+                value={form.ownerId}
+                onChange={(event) => setField("ownerId", event.target.value)}
+                className={inputClass}
+                required
+              >
+                <option value="" disabled>
+                  Select owner
+                </option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.username} ({user.email})
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="flex justify-end gap-3 pt-2 sm:col-span-2">
+              <button type="button" onClick={close} className={actionClass}>
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={createCar.isPending || updateCar.isPending}
+                className="rounded-lg bg-[#ffd015] px-4 py-2 text-sm font-bold text-[#141414] disabled:opacity-60"
+              >
+                {createCar.isPending || updateCar.isPending
+                  ? "Saving..."
+                  : "Save Car"}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+      {resource === "images" && selectedCar && (
+        <Modal
+          title={`Images · ${selectedCar.brand} ${selectedCar.model}`}
+          onClose={close}
+        >
+          <p className="mb-4 text-sm text-[#a9adb6]">
+            {imagesQuery.data?.length || 0} / 5 images
+          </p>
+          {imagesQuery.isLoading ? (
+            <p className="text-sm text-[#a9adb6]">Loading images...</p>
+          ) : imagesQuery.data?.length ? (
+            <div className="mb-5 grid gap-3 sm:grid-cols-2">
+              {imagesQuery.data.map((image) => (
+                <div
+                  key={image.id}
+                  className="overflow-hidden rounded-lg border border-white/10 bg-[#252628]"
+                >
+                  <img
+                    src={image.url}
+                    alt="Car"
+                    className="h-36 w-full object-cover"
+                  />
+                  <div className="flex items-center justify-between gap-2 p-2">
+                    <span className="truncate text-xs text-[#a9adb6]">
+                      {image.url}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        deleteImage.mutate({
+                          carId: selectedCar.id,
+                          imageId: image.id,
+                        })
+                      }
+                      className="text-xs text-red-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mb-5 text-sm text-[#a9adb6]">No images added.</p>
+          )}
+          <form onSubmit={submitImage} className="flex gap-2">
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={(event) => setImageUrl(event.target.value)}
+              placeholder="/cars/corolla/corolla1.jpg"
+              className={inputClass + " mt-0"}
+              required
+            />
+            <button
+              type="submit"
+              disabled={
+                addImage.isPending || (imagesQuery.data?.length || 0) >= 5
+              }
+              className="rounded-lg bg-[#ffd015] px-4 text-sm font-bold text-[#141414] disabled:opacity-60"
+            >
+              Add
+            </button>
+          </form>
+        </Modal>
+      )}
+      {resource === "dates" && selectedCar && (
+        <Modal
+          title={`Unavailable Days · ${selectedCar.brand} ${selectedCar.model}`}
+          onClose={close}
+        >
+          {datesQuery.isLoading ? (
+            <p className="text-sm text-[#a9adb6]">
+              Loading unavailable periods...
+            </p>
+          ) : datesQuery.data?.length ? (
+            <div className="mb-5 space-y-2">
+              {datesQuery.data.map((date) => (
+                <div
+                  key={date.id}
+                  className="flex items-center justify-between rounded-lg border border-white/10 bg-[#252628] px-3 py-2 text-sm"
+                >
+                  <span>
+                    {new Date(date.startDate).toLocaleDateString()} →{" "}
+                    {new Date(date.endDate).toLocaleDateString()}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      deleteDate.mutate({
+                        carId: selectedCar.id,
+                        dateId: date.id,
+                      })
+                    }
+                    className="text-xs text-red-300"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mb-5 text-sm text-[#a9adb6]">
+              No unavailable periods added.
+            </p>
+          )}
+          <form onSubmit={submitDate} className="grid gap-3 sm:grid-cols-2">
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              Start date
+              <input
+                type="date"
+                value={startDate}
+                onChange={(event) => setStartDate(event.target.value)}
+                className={inputClass}
+                required
+              />
+            </label>
+            <label className="text-xs font-semibold text-[#c6c7ca]">
+              End date (optional)
+              <input
+                type="date"
+                value={endDate}
+                min={startDate}
+                onChange={(event) => setEndDate(event.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={addDate.isPending}
+              className="rounded-lg bg-[#ffd015] px-4 py-2 text-sm font-bold text-[#141414] sm:col-span-2"
+            >
+              {addDate.isPending ? "Adding..." : "Add Period"}
+            </button>
+          </form>
+        </Modal>
+      )}
+    </div>
+  );
 }

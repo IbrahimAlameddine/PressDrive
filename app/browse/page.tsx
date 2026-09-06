@@ -2,10 +2,7 @@ import BrowseClient from "../../components/BrowseClient";
 import { prisma } from "@/lib/prisma";
 
 
-export default async function BrowsePage({ searchParams }: { searchParams: Promise<{ provider?: string }> }) {
-  const { provider } = await searchParams;
-  const initialProvider = provider === "office" || provider === "driver" ? provider : "all";
-
+export default async function BrowsePage() {
   const cars = await prisma.car.findMany({
     where: { owner: { role: "PROVIDER" } },
     include: {
@@ -16,13 +13,10 @@ export default async function BrowsePage({ searchParams }: { searchParams: Promi
   });
 
   const vehicles = cars.map((car) => {
-    const normalizedCategory = (car.category || "Sedan").toLowerCase();
-    const type = normalizedCategory.includes("driver") || normalizedCategory.includes("private") ? "Private Driver" : "Rental Office";
-
     return {
       id: car.id,
-      image: car.images[0].url,
-      type,
+      image: car.images[0]?.url ?? "/cars/sedan/sedan1.jpg",
+      type: "Rental Office",
       name: `${car.brand} ${car.model}`,
       detail: `${car.owner.username} · ${car.seats} seats · ${car.transmission}`,
       price: `$${Number(car.pricePerDay).toFixed(2)}`,
@@ -30,5 +24,5 @@ export default async function BrowsePage({ searchParams }: { searchParams: Promi
     };
   });
 
-  return <BrowseClient initialProvider={initialProvider} cars={vehicles} />;
+  return <BrowseClient cars={vehicles} />;
 }

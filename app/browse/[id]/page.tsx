@@ -18,7 +18,7 @@ export default async function BrowseCarDetailPage({ params }: { params: Promise<
       owner: { role: "PROVIDER" },
     },
     include: {
-      owner: { select: { username: true } },
+      owner: { select: { username: true, phone: true } },
       images: {
         orderBy: { id: "asc" },
         select: { url: true },
@@ -42,7 +42,7 @@ export default async function BrowseCarDetailPage({ params }: { params: Promise<
         fuelType: car.fuelType,
         pricePerDay: Number(car.pricePerDay),
         category: car.category,
-        owner: { username: car.owner.username },
+        owner: { username: car.owner.username, phone: car.owner.phone },
         images: car.images,
       }}
     />

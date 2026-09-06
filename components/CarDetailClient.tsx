@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { axiosPost, ApiError } from "@/lib/axios";
 
 type CarDetail = {
   id: number;
@@ -15,10 +16,16 @@ type CarDetail = {
   category: string;
   owner: {
     username: string;
+    phone: string;
   };
   images: {
     url: string;
   }[];
+};
+
+type UnavailablePeriod = {
+  start: string;
+  end: string;
 };
 
 export default function CarDetailClient({
@@ -30,14 +37,12 @@ export default function CarDetailClient({
   const [pickupDate, setPickupDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [unavailablePeriods, setUnavailablePeriods] = useState<UnavailablePeriod[]>([]);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
   const images = car.images || [];
   const price = Number(car.pricePerDay || 0);
-
-  const provider =
-    /driver|private/i.test(car.category)
-      ? "Private Driver"
-      : "Rental Office";
 
   const specs = [
     ["Category", car.category],
@@ -48,10 +53,73 @@ export default function CarDetailClient({
     ["Provider", car.owner.username],
   ];
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+
+    setSubmitted(false);
+    setError("");
+    setUnavailablePeriods([]);
+
+    if (!pickupDate || !returnDate) {
+      setError("Please select both a start date and an end date.");
+      return;
+    }
+
+    if (returnDate < pickupDate) {
+      setError("The end date cannot be before the start date.");
+      return;
+    }
+
+    setCheckingAvailability(true);
+
+    try {
+      const response = await axiosPost<
+        { carId: number; start: string; end: string },
+        {
+          available: boolean;
+          unavailableDates: UnavailablePeriod[];
+        }
+      >("/cars/availability", {
+        carId: car.id,
+        start: pickupDate,
+        end: returnDate,
+      });
+
+      if (!response.data?.available) {
+        setUnavailablePeriods(response.data?.unavailableDates ?? []);
+        return;
+      }
+
+      const phone = car.owner.phone.replace(/\D/g, "");
+      if (!phone) {
+        setError("This rental office does not have a WhatsApp number.");
+        return;
+      }
+
+      const message = [
+        `Hello ${car.owner.username}, I would like to rent the ${car.brand} ${car.model} through PressDrive.`,
+        `Dates: ${pickupDate} to ${returnDate}.`,
+      ].join("\n\n");
+
+      window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    } catch (requestError) {
+      setError(
+        requestError instanceof ApiError
+          ? requestError.message
+          : "Unable to check car availability. Please try again.",
+      );
+    } finally {
+      setCheckingAvailability(false);
+    }
   };
+
+  const formatDate = (value: string) =>
+    new Date(`${value}T00:00:00Z`).toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      timeZone: "UTC",
+      year: "numeric",
+    });
 
   return (
     <main className="flex-1 bg-[#090a0d]">
@@ -118,7 +186,7 @@ export default function CarDetailClient({
 
             <div>
               <span className="rounded-full bg-[#2b2d31] px-2 py-1 text-[9px] text-[#c0c1c5]">
-                {provider}
+                Rental Office
               </span>
 
               <h1 className="mt-2 text-sm font-bold text-[#f7f7f3]">
@@ -215,10 +283,30 @@ export default function CarDetailClient({
 
             <button
               type="submit"
+              disabled={checkingAvailability}
               className="h-12 w-full rounded-xl bg-[#ffd015] text-sm font-bold text-[#151515] hover:bg-[#ffe05b]"
             >
-              Confirm Booking
+              {checkingAvailability ? "Checking availability..." : "Book Now"}
             </button>
+
+            {error && (
+              <p className="text-center text-[10px] text-red-300">{error}</p>
+            )}
+
+            {unavailablePeriods.length > 0 && (
+              <section className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-200">
+                <p className="font-bold">Car unavailable</p>
+                <p className="mt-2">The car is unavailable during:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {unavailablePeriods.map((period) => (
+                    <li key={`${period.start}-${period.end}`}>
+                      {formatDate(period.start)} → {formatDate(period.end)}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2">Please select different dates.</p>
+              </section>
+            )}
 
             {submitted && (
               <p className="text-center text-[10px] text-[#64666d]">

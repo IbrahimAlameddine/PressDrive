@@ -66,7 +66,7 @@ export default function Navbar() {
     { href: "/ai-assistant", label: "AI Assistant" },
   ];
 
-  if (user?.role === "ADMIN" || user?.role === "PROVIDER") {
+  if (user?.role === "ADMIN") {
     links.push({ href: "/dashboard", label: "Dashboard" });
   }
 

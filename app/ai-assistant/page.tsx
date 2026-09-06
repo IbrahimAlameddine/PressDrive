@@ -1,4 +1,4 @@
-import Icon from "../../components/Icon";
+import AiAssistantClient from "../../components/AiAssistantClient";
 
 export const metadata = {
   title: "AI Assistant | PressDrive",
@@ -17,19 +17,7 @@ export default function AiAssistantPage() {
       </section>
 
       <div className="mx-auto max-w-4xl px-6 py-8 sm:px-10 md:py-10">
-        <section className="rounded-2xl border border-[#292d35] bg-[#191a1b] p-5 sm:p-6" aria-label="AI assistant conversation">
-          <div className="min-h-64 text-xs">
-            <div className="flex items-start gap-3">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[#ffd015] text-[#151515]"><Icon name="sparkles" className="h-4 w-4" /></span>
-              <p className="rounded-xl bg-[#2a2b2e] px-4 py-3 text-[#b0b2b8]">Hi! Where are you planning to travel?</p>
-            </div>
-          </div>
-        </section>
-
-        <form className="mt-4 flex items-center gap-2 rounded-xl border border-[#292d35] bg-[#191a1b] p-2">
-          <input aria-label="Your answer" placeholder="Type your answer or question..." className="min-w-0 flex-1 bg-transparent px-2 text-xs text-[#f7f7f3] outline-none placeholder:text-[#686b74]" />
-          <button type="submit" className="rounded-lg bg-[#ffd015] px-4 py-2.5 text-[10px] font-bold text-[#151515] transition hover:bg-[#ffe05b]">Send</button>
-        </form>
+        <AiAssistantClient />
       </div>
     </main>
   );
