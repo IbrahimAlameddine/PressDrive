@@ -6,7 +6,8 @@
     "dev": "next dev --hostname localhost --port 3001",
     "build": "next build",
     "start": "next start --hostname localhost --port 3001",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
